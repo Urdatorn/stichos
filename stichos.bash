@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+# Locate the repo relative to this script (resolving symlinks, e.g. ~/bin/stichos)
+script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+
 # Directory with TSV files
-dir=~/git/stichos/tsv/
+dir="$script_dir/tsv"
 
 # Determine which files to use based on argument
 case "$1" in
@@ -45,7 +48,7 @@ WHITE="\033[37m"
 RESET="\033[0m"
 
 # Read axe picture into array
-mapfile -t axe_lines < ~/git/stichos/simmias_axe.txt
+mapfile -t axe_lines < "$script_dir/simmias_axe.txt"
 
 # Get terminal width
 term_width=$(tput cols)
