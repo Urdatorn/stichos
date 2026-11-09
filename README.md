@@ -7,5 +7,5 @@ Put this in `~/bin/`, then add the following to your runcommands (e.g. `.zshrc`)
 export PATH="$HOME/bin:$PATH"
 
 # startup rice
-stichos # args: homer | homer-didnt-exist
+stichos # args: --homer | --homer-didnt-exist, --no-pelekys
 ```

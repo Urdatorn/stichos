@@ -6,8 +6,23 @@ script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 # Directory with TSV files
 dir="$script_dir/tsv"
 
-# Determine which files to use based on argument
-case "$1" in
+# Parse arguments
+corpus=all
+no_pelekys=false
+for arg in "$@"; do
+    case "$arg" in
+        --homer) corpus=homer ;;
+        --homer-didnt-exist) corpus=homer-didnt-exist ;;
+        --no-pelekys) no_pelekys=true ;;
+        *)
+            echo "usage: stichos [--homer | --homer-didnt-exist] [--no-pelekys]" >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Determine which files to use based on corpus
+case "$corpus" in
     homer)
         files=("$dir"/HH* "$dir"/iliad* "$dir"/odyssey*)
         ;;
@@ -47,11 +62,11 @@ BLUE="\033[34m"
 WHITE="\033[37m"
 RESET="\033[0m"
 
-# Read axe picture into array
-mapfile -t axe_lines < "$script_dir/simmias_axe.txt"
-
 # Get terminal width
 term_width=$(tput cols)
+
+# Read axe picture into array
+mapfile -t axe_lines < "$script_dir/simmias_axe.txt"
 
 # Prepare info lines
 info_lines=(
@@ -63,6 +78,20 @@ info_lines=(
     "${YELLOW}Metre:${RESET} ${tab2}"
     "${YELLOW}Caesurae:${RESET} ${tab3}"
 )
+
+# Blank line to separate from earlier terminal output
+echo
+
+# Without the axe, print only the info lines
+if $no_pelekys; then
+    for info_line in "${info_lines[@]}"; do
+        if [[ ${#info_line} -gt $term_width ]]; then
+            info_line="${info_line:0:$term_width}"
+        fi
+        echo -e "$info_line"
+    done
+    exit 0
+fi
 
 # Print axe and info side by side
 max_lines=$((${#axe_lines[@]} > ${#info_lines[@]} ? ${#axe_lines[@]} : ${#info_lines[@]}))
